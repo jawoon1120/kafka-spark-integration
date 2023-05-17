@@ -1,5 +1,20 @@
 version: '3'
 services:
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:9092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
   kafka1:
     image: confluentinc/cp-kafka:7.2.1
     container_name: kafka1
@@ -11,9 +26,12 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997
     volumes:
       - ./run_workaround.sh:/tmp/run_workaround.sh
     command: "bash -c '/tmp/run_workaround.sh && /etc/confluent/docker/run'"
+  
   kafka2:
     image: confluentinc/cp-kafka:7.2.1
     container_name: kafka2
@@ -25,9 +43,12 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997
     volumes:
       - ./run_workaround.sh:/tmp/run_workaround.sh
     command: "bash -c '/tmp/run_workaround.sh && /etc/confluent/docker/run'"
+  
   kafka3:
     image: confluentinc/cp-kafka:7.2.1
     container_name: kafka3
@@ -39,6 +60,8 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_JMX_PORT: 9997
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka0 -Dcom.sun.management.jmxremote.rmi.port=9997
     volumes:
       - ./run_workaround.sh:/tmp/run_workaround.sh
     command: "bash -c '/tmp/run_workaround.sh && /etc/confluent/docker/run'"
